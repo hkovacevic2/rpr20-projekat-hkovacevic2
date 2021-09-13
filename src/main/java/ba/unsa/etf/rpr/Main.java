@@ -8,21 +8,26 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Objects;
 
 public class Main extends Application {
 
+    public static void showLoginScreen(Stage stage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(Main.class.getResource("/fxml/login.fxml")));
+        loader.setController(new LoginController(UserDAO.getInstance()));
+        Parent root = loader.load();
+        stage.setTitle("BBB");
+        stage.setScene(new Scene(root, Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE));
+        stage.getIcons().add(new Image("images/logo.png"));
+        stage.setResizable(false);
+        stage.show();
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception{
-        FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(getClass().getResource("/fxml/login.fxml")));
-        LoginController ctrl = new LoginController(UserDAO.getInstance());
-        loader.setController(ctrl);
-        Parent root = loader.load();
-        primaryStage.setTitle("BBB");
-        primaryStage.setScene(new Scene(root, Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE));
-        primaryStage.getIcons().add(new Image("images/logo.png"));
-        primaryStage.setResizable(false);
-        primaryStage.show();
+        showLoginScreen(primaryStage);
     }
 
 
