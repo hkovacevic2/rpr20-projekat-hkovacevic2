@@ -1,5 +1,6 @@
 package ba.unsa.etf.rpr;
 
+import ba.unsa.etf.rpr.controllers.LoginController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,8 +9,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Objects;
 
 public class Main extends Application {

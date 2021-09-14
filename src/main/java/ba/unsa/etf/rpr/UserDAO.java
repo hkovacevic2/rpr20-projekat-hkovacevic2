@@ -14,21 +14,23 @@ import java.util.Scanner;
 public class UserDAO {
     private static UserDAO instance = null;
     private Connection cnctn;
-    private PreparedStatement getUserStatement, getAllUsersStatement, getAllEmployeesStatement, deleteUserStatement;
+    private PreparedStatement getUserStatement, getAllEmployeesStatement, deleteUserStatement, addNewEmployeeStatement, nextIdStatement;
     private SimpleObjectProperty<User> selectedUser = new SimpleObjectProperty<>();
 
     private UserDAO() throws SQLException {
-        String url = "jdbc:sqlite:bbb.db";
+        String url = "jdbc:sqlite:" + System.getProperty("user.home") + "/bbb.db";
         try {
             cnctn = DriverManager.getConnection(url);
+            getUserStatement = cnctn.prepareStatement("SELECT * FROM user WHERE username=? AND password=?");
         }catch (SQLException e) {
             regenerateDB();
             cnctn = DriverManager.getConnection(url);
+            getUserStatement = cnctn.prepareStatement("SELECT * FROM user WHERE username=? AND password=?");
         }
-        getUserStatement = cnctn.prepareStatement("SELECT * FROM user WHERE username=? AND password=?");
-        getAllUsersStatement = cnctn.prepareStatement("SELECT * FROM user");
+        nextIdStatement = cnctn.prepareStatement("SELECT max(id)+1 FROM user");
         getAllEmployeesStatement = cnctn.prepareStatement("SELECT * FROM user WHERE admin=0");
         deleteUserStatement = cnctn.prepareStatement("DELETE FROM user WHERE id=?");
+        addNewEmployeeStatement = cnctn.prepareStatement("INSERT INTO user VALUES (?,?,?,?,?,?,?)");
     }
 
     private void regenerateDB() {
@@ -109,5 +111,22 @@ public class UserDAO {
 
     public void setSelectedUser(User selectedUser) {
         this.selectedUser.set(selectedUser);
+    }
+
+    public void addNewEmployee(Employee employee) {
+        try {
+            ResultSet rs = nextIdStatement.executeQuery();
+            rs.next();
+            addNewEmployeeStatement.setInt(1, rs.getInt(1));
+            addNewEmployeeStatement.setString(2, employee.getUsername());
+            addNewEmployeeStatement.setString(3, employee.getPassword());
+            addNewEmployeeStatement.setInt(4, employee.isAdmin() ? 1 : 0);
+            addNewEmployeeStatement.setString(5, employee.getName());
+            addNewEmployeeStatement.setString(6, employee.getSurname());
+            addNewEmployeeStatement.setString(7, employee.getPhoneNumber());
+            addNewEmployeeStatement.execute();
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
